@@ -130,7 +130,7 @@ class CategoryControllerTest {
 	@Disabled
 	void testPatchNoChanges() throws Exception {
 		given(categoryRepository.findById(anyString()))
-				.willReturn(Mono.just(Category.builder().description("description").build()));
+				.willReturn(Mono.just(Category.builder().build()));
 
 		given(categoryRepository.save(any(Category.class)))
 				.willReturn(Mono.just(Category.builder().build()));
