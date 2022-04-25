@@ -8,9 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.reactivestreams.Publisher;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static org.mockito.ArgumentMatchers.*;
 
 /**
  * @author <a href="pulkit.aggarwal@upgrad.com">Pulkit Aggarwal</a>
@@ -33,7 +36,7 @@ class VendorControllerTest {
 	}
 
 	@Test
-	void list() {
+	void list() throws Exception {
 		BDDMockito.given(vendorRepository.findAll())
 				.willReturn(Flux.just(Vendor.builder().firstName("Pulkit").lastName("Aggarwal").build(),
 						Vendor.builder().firstName("Yogita").lastName("Aggarwal").build()));
@@ -46,7 +49,7 @@ class VendorControllerTest {
 	}
 
 	@Test
-	void getById() {
+	void getById() throws Exception {
 		BDDMockito.given(vendorRepository.findById("someId"))
 				.willReturn(Mono.just(Vendor.builder().firstName("Pulkit").lastName("Aggarwal").build()));
 
@@ -54,5 +57,21 @@ class VendorControllerTest {
 				.uri("/api/v1/vendors/someId")
 				.exchange()
 				.expectBodyList(Vendor.class);
+	}
+
+	@Test
+	void testCreateVendor() throws Exception{
+		BDDMockito.given(vendorRepository.saveAll(any(Publisher.class)))
+				.willReturn(Flux.just(Vendor.builder().firstName("Pulkit").lastName("Aggarwal").build(),
+						Vendor.builder().firstName("Yogita").lastName("Aggarwal").build()));
+
+		Mono<Vendor> vendorMono = Mono.just(Vendor.builder().firstName("Pu").lastName("AA").build());
+
+		webTestClient.post()
+				.uri("/api/v1/vendors")
+				.body(vendorMono, Vendor.class)
+				.exchange()
+				.expectStatus()
+				.isCreated();
 	}
 }

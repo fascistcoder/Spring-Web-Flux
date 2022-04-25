@@ -70,7 +70,7 @@ class CategoryControllerTest {
 	}
 
 	@Test
-	void testCreateCategory() {
+	void testCreateCategory() throws Exception{
 
 		Category[] categories = categories("Cat1", "Cat2");
 
