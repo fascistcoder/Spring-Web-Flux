@@ -70,7 +70,7 @@ class CategoryControllerTest {
 	}
 
 	@Test
-	void testCreateCategory() throws Exception{
+	void testCreateCategory() throws Exception {
 
 		Category[] categories = categories("Cat1", "Cat2");
 
@@ -85,5 +85,21 @@ class CategoryControllerTest {
 				.exchange()
 				.expectStatus()
 				.isCreated();
+	}
+
+	@Test
+	void testUpdate() throws Exception {
+
+		BDDMockito.given(categoryRepository.save(any(Category.class)))
+				.willReturn(Mono.just(Category.builder().build()));
+
+		Mono<Category> catToUpdateMono = Mono.just(Category.builder().description("Some cate").build());
+
+		webTestClient.put()
+				.uri("/api/v1/categories/wew")
+				.body(catToUpdateMono, Category.class)
+				.exchange()
+				.expectStatus()
+				.isOk();
 	}
 }
