@@ -1,6 +1,5 @@
 package com.example.springwebfluxrest.controllers;
 
-import com.example.springwebfluxrest.domain.Category;
 import com.example.springwebfluxrest.domain.Vendor;
 import com.example.springwebfluxrest.repositories.VendorRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +59,7 @@ class VendorControllerTest {
 	}
 
 	@Test
-	void testCreateVendor() throws Exception{
+	void testCreateVendor() throws Exception {
 		BDDMockito.given(vendorRepository.saveAll(any(Publisher.class)))
 				.willReturn(Flux.just(Vendor.builder().firstName("Pulkit").lastName("Aggarwal").build(),
 						Vendor.builder().firstName("Yogita").lastName("Aggarwal").build()));
@@ -73,5 +72,21 @@ class VendorControllerTest {
 				.exchange()
 				.expectStatus()
 				.isCreated();
+	}
+
+	@Test
+	void testUpdate() throws Exception {
+		BDDMockito.given(vendorRepository.save(any(Vendor.class)))
+				.willReturn(Mono.just(Vendor.builder().firstName("Pulkit").lastName("Aggarwal").build()));
+
+		Mono<Vendor> vendorMono = Mono.just(Vendor.builder().firstName("Pu").lastName("AA").build());
+
+		webTestClient.put()
+				.uri("/api/v1/vendors/www")
+				.body(vendorMono, Vendor.class)
+				.exchange()
+				.expectStatus()
+				.isOk();
+
 	}
 }
